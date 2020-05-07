@@ -1,0 +1,8 @@
+[Unit]
+Description=Simple Network Management Protocol (SNMP) daemon.
+After=syslog.target network.target
+[Service]
+Type=simple
+ExecStart=/usr/sbin/snmpd -f
+[Install]
+WantedBy=multi-user.target
