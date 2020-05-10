@@ -20,4 +20,3 @@
 # intended to be modified.
 
 # All variables within this role should have a prefix of "tripleo_{{ role_name | replace('tripleo-', '') | replace('-', '_') }}"
-

@@ -15,7 +15,7 @@
 # under the License.
 
 
-# "tripleo_provision_mcelog" will search for and load any operating system variable file
+# "tripleo_provision_snmpd" will search for and load any operating system variable file
 
 # found within the "vars/" path. If no OS files are found the task will skip.
 - name: Gather variables for each operating system
@@ -32,15 +32,36 @@
   tags:
     - always
 
-- name: Ensure mcelog is installed
+- name: Ensure net-snmp is installed
   yum:
-    name: mcelog
+    name: net-snmp
     state: installed
   when: "ansible_facts['os_family'] == 'RedHat'"
+  register: net_snmp_installed
 
-- name: Ensure mcelog is enabled and started
+- name: Change snmpd config
+  lineinfile:
+    path: /etc/snmp/snmpd.conf
+    line: "viewsystemonly  included   .1"
+    insertafter: EOF
+    state: present
+
+- name: Set library path and
+  lineinfile:
+    path: ~/.bashrc
+    line: "export LD_LIBRARY_PATH=/usr/lib"
+    insertafter: EOF
+    state: present
+
+- name: Set default MIB configuration
+  shell: net-snmp-config --default-mibdirs && net-snmp-config --snmpconfpath
+  environment:
+    LD_LIBRARY_PATH: "/usr/lib"
+
+- name: Ensure snmpd is enabled and started
   systemd:
-    state: started
-    name: rsyslog
+    state: restarted
+    name: snmpd
     enabled: true
     daemon-reload: yes
+  when: net_snmp_installed.changed
