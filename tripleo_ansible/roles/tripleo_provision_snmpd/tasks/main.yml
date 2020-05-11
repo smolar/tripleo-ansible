@@ -34,9 +34,12 @@
 
 - name: Ensure net-snmp is installed
   yum:
-    name: net-snmp
+    name: "{{ item }}"
     state: installed
-  when: "ansible_facts['os_family'] == 'RedHat'"
+  with_items:
+    - net-snmp
+    - net-snmp-utils
+  #when: "ansible_facts['os_family'] == 'RedHat'"
   register: net_snmp_installed
 
 - name: Change snmpd config
