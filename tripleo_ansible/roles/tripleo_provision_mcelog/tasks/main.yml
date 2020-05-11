@@ -41,6 +41,6 @@
 - name: Ensure mcelog is enabled and started
   systemd:
     state: started
-    name: rsyslog
+    name: mcelog
     enabled: true
     daemon-reload: yes
